@@ -592,3 +592,446 @@ xF.shiftGear(GearAction.down)
 i10Nios.shiftGear(GearAction.up)
 i10Nios
 xF
+
+class SchoolEmployee{
+    let hours: Int
+    
+    init(hours: Int){
+        self.hours = hours
+    }
+    func printWork(){
+        print("I work for \(hours) hours a day")
+    }
+}
+
+// if you want to you can override the method of parent using override
+class Teacher: SchoolEmployee {
+    func work(){
+        print("I take classes for \(hours) hours a day")
+    }
+    override func printWork() {
+        print("I am the hardest worker of the School")
+    }
+}
+// if you know that this is the final child you can use the final keyword
+final class Admin: SchoolEmployee {
+    func work() {
+        print("I take care of the admin work for \(hours) hours a day")
+    }
+}
+
+let meena = Teacher(hours: 8)
+let ravi = Admin(hours: 4)
+meena.work()
+ravi.work()
+meena.printWork()
+ravi.printWork()
+
+class Vehicle{
+    let isElectric: Bool
+    
+    init(isElectric: Bool){
+        self.isElectric = isElectric
+    }
+}
+// the code without super.init wont work as we need to initialise the parent class in the child class as well
+class Car1: Vehicle{
+    let isConvertible: Bool
+    
+    init(isElectric: Bool, isConvertible: Bool) {
+        self.isConvertible = isConvertible
+        super.init(isElectric: isElectric)
+    }
+}
+
+let TeslaX = Car1(isElectric: true, isConvertible: false)
+
+class User {
+    var username = "Anonymous"
+
+    func copy() -> User {
+        let user = User()
+        user.username = username
+        return user
+    }
+}
+// this method is a deep copy if you want the users tohave a diff value
+
+var user1 = User()
+let user2 = user1.copy()
+user2.username = "Taylor"
+print(user1.username)
+print(user2.username)
+
+class NewUser {
+    let id: Int
+
+    init(id: Int) {
+        self.id = id
+        print("User \(id): I'm alive!")
+    }
+
+    deinit {
+        print("User \(id): I'm dead!")
+    }
+}
+for i in 1...3 {
+    let user = NewUser(id: i)
+    print("User \(user.id): I'm in control!")
+}
+
+class Animals{
+    let legs: Int
+    
+    init(legs: Int) {
+        self.legs = legs
+    }
+}
+
+class Dogs: Animals {
+    init(){
+        super.init(legs: 4)
+    }
+    func speak() {
+        print("I am a Dog and i bark. Bow Bow")
+    }
+}
+
+final class Corgi: Dogs{
+    func desc() {
+        print("I am a Corgi. I have \(legs) legs")
+    }
+}
+final class Poodle: Dogs{
+    func desc() {
+        print("I am a Poodle. I have \(legs) legs")
+    }
+}
+
+class Cats: Animals{
+    let isTame: Bool
+    init(legs: Int, isTame: Bool) {
+        self.isTame = isTame
+        super.init(legs: legs)
+    }
+    func speak() {
+        print("I am a cat and i purr. Meow Meow")
+    }
+}
+
+final class Persian: Cats{
+    func desc() {
+        print("I am a Persian Cat, Am i tameable? \((isTame) ? "yes" : "no")")
+    }
+}
+
+final class Lio: Cats{
+    func desc() {
+        print("I am a Lion, Am i tameable? \((isTame) ? "yes" : "no")")
+    }
+}
+
+let cheddar = Corgi()
+print(cheddar)
+cheddar.desc()
+cheddar.speak()
+//print(cheddar.legs)
+let flatty = Poodle()
+print(flatty.legs)
+flatty.desc()
+flatty.speak()
+
+let flash = Persian(legs: 4, isTame: true)
+flash.speak()
+flash.desc()
+
+let fluffly = Lio(legs: 4, isTame: false)
+fluffly.speak()
+fluffly.desc()
+
+// protocol is like a type Bool Int etc. so if anyone wants to use it they have to use all the methods and properties defined insdie it. its like a blueprint
+// it doesnt have the func body
+
+protocol Vehile {
+    var name: String { get }
+    // this says name is read only
+    var currentPassengers: Int { get set }
+    // this says it is read and write
+    func estimatedTravel(for distance: Int) -> Int
+    func travel(distance: Int)
+}
+// whatever it conforms to it has to use all the necessary funcs
+struct Car2: Vehile{
+    let name = "Car"
+    var currentPassengers = 2
+    func estimatedTravel(for distance: Int) -> Int {
+        distance/20
+    }
+    func travel(distance: Int) {
+        print("Im travelling \(distance)kms")
+    }
+    func sunroof(){
+        print("Its a nice day")
+    }
+}
+
+struct Bicycle: Vehile{
+    let name = "Bicycle"
+    var currentPassengers = 1
+    func estimatedTravel(for distance: Int) -> Int {
+        distance/10
+    }
+    func travel(distance: Int) {
+        print("Im travelling \(distance)kms")
+    }
+}
+func commute(distance: Int, in vehicle: Vehile){
+    if vehicle.estimatedTravel(for: distance) > 100{
+        print("youre having a tough day of travel")
+    } else {
+        vehicle.travel(distance: distance)
+    }
+}
+
+func getTravelEstimate(using vehicles: [Vehile], distance: Int){
+    for vehicle in vehicles{
+        let estimate = vehicle.estimatedTravel(for: distance)
+        print("\(vehicle.name) takes \(estimate) hours for \(distance) kms")
+    }
+}
+
+let car2 = Car2()
+commute(distance: 100, in: car2)
+let bike = Bicycle()
+commute(distance: 100, in: bike)
+getTravelEstimate(using: [car2,bike], distance: 300)
+// now we dont need the vehicle to be car. we can have it as vehicle cuz swift knows that the obj will have the 2 methods
+
+func getRandomNumber() -> some Equatable {
+    Double.random(in: 1...10)
+}
+
+func getRandomBool() -> some Equatable {
+    Bool.random()
+}
+
+//using an Equatable(opaque return type) tells swift this has a return type based on what is returned whoch can be changed over time
+print(getRandomNumber() == getRandomNumber())
+// equatable is a protocol. it can be a vehicle. we can return any vehicle based on what we decide.
+var quote = "   The truth is rarely pure and never simple   "
+let trimmed = quote.trimmingCharacters(in: .whitespacesAndNewlines)
+print(quote," \n", trimmed)
+extension String {
+    func trimmed() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    mutating func trim() {
+        self = self.trimmed()
+    }
+    var lines: [String] {
+        self.components(separatedBy: .newlines)
+    }
+}
+
+print(quote.trim())
+
+// extensions extends the properties of types.
+//quote.trim() creates a new data field with the changes. but we can do it inplace by using trimmed.
+quote.trim()
+print(quote)
+
+let lyrics = """
+But I keep cruising
+Can't stop, won't stop moving
+It's like I got this music in my mind
+Saying it's gonna be alright
+"""
+
+print(lyrics.lines.count)
+
+extension Collection {
+    var isNotEmpty: Bool {
+        isEmpty == false
+    }
+}
+// Collection consists of Arrays, Sets, Dicts etc...
+
+let guests = ["Mario", "Luigi", "Peach"]
+
+if guests.isNotEmpty {
+    print("Guest count: \(guests.count)")
+}
+
+protocol Person1{
+    var name: String { get }
+    func sayHelloPerson()
+}
+
+extension Person1{
+    func sayHelloPerson() {
+        print("Hi, I'm \(name)")
+    }
+}
+
+struct Employees: Person1 {
+    let name: String
+}
+
+let santhos = Employees(name: "Santhosh")
+santhos.sayHelloPerson()
+// here even tho protocol says we need the func we can use extension to bypass it by giving a default func
+
+protocol Building{
+    var rooms: Int { get }
+    var cost: Int { get set }
+    var estateAgent: String { get }
+    mutating func saleSummary()
+}
+
+struct House1: Building {
+    var rooms: Int
+    var cost: Int
+    var estateAgent: String
+    func saleSummary() {
+        print("This house has \(rooms). The price is ₹\(cost). The estate agent is \(estateAgent)")
+    }
+}
+struct Office: Building {
+    let rooms: Int
+    var cost: Int
+    let estateAgent: String
+    
+    mutating func saleSummary() {
+        if rooms > 8 {
+            cost += 10000
+        }
+        print("This office has \(rooms) rooms. The price is ₹\(cost). The estate agent is \(estateAgent)")
+    }
+}
+
+var house1 = House1(rooms: 9, cost: 84_00_000, estateAgent: "CasaGrand")
+house1.saleSummary()
+house1.rooms = 10
+house1.saleSummary()
+
+var office = Office(rooms: 60, cost: 1_00_00_000, estateAgent: "DLF")
+office.saleSummary()
+
+var opposites = ["Mario" : "Wario", "Luigi" : "Waluigi"]
+
+if let marioOpp = opposites["Mario"] {
+    print("Marios opposite is \(marioOpp)")
+}
+// this is called using a optional. It the opposite it able to unwrap and give the value then execute it
+var username21 : String? = nil
+
+if let usernamePerson = username21 {
+    print("Hello \(usernamePerson)")
+} else {
+    print("There was nothing to unwrap")
+}
+// when we are using optionals we always have to unwrap it by the above method.
+
+// guard let checks if the optional has number and places it inside the optional.
+//if let runs if optional has value inside. guard let runs if optional doesnt have value inside
+func printSquare(of number: Int?) {
+    guard let number = number else {
+        print("Missing input")
+        return
+    }
+    print("\(number)x\(number) = \(number*number)")
+}
+
+printSquare(of: nil)
+
+let captains = [
+    "Enterprise": "Picard",
+    "Voyager": "Janeway",
+    "Defiant": "Sisko"
+]
+
+let new = captains["Serenity"] ?? "N/A"
+
+print(new)
+
+// this method of unwrapping is nil coelescing
+struct Book {
+    let title: String
+    let author: String?
+}
+// by nil coelescing we can use it as safety when there are values not known. so if we want int of a string but sometimes an number isnt passes we can use it as 0.
+let book = Book(title: "Beowulf", author: nil)
+let author = book.author ?? "Anonymous"
+print(author)
+let input = "5"
+let number3 = Int(input) ?? 0
+print(number3)
+
+// optional chaining does of the optional has a value then excutes the nextnstep else it assigns the nil coelescent value
+let b99 = [String]()
+let b991 = ["Jake", "Amy", "Charles", "Rosa"]
+let fave = b99.randomElement()?.uppercased() ?? "I dont like detectives"
+print(fave)
+
+let book1: Book?
+book1 = Book(title: "Diary of the wimpy Kid", author: "Santhosh Srinivas")
+let author1 = book1?.author?.first?.uppercased() ?? "A"
+print(author1)
+let boook: Book? = nil
+let author2 = boook?.author?.first?.uppercased() ?? "A"
+print(author2)
+
+enum UserError: Error {
+    case networkError, badId
+}
+
+func getUser1(for id: Int) throws -> String{
+    if id < 10000 {
+        throw UserError.badId
+    } else if id == 696969 {
+        throw UserError.networkError
+    } else {
+        return String(id)
+    }
+}
+
+do {
+    let validity = try getUser1(for: 696969)
+    print("User is valid \(validity)")
+} catch {
+    print("There was an error \(error)")
+}
+
+// optional try is used only when you want code to run if there is error or not. you wont know what error it is with try?
+
+if let valid = try? getUser1(for: 100000) {
+    print("User: \(valid)")
+}
+// this method of nil coelescing could be used along w try?
+let user3 = (try? getUser1(for: 23)) ?? "Anonymous"
+print(user3)
+
+// using guard let and unwrapping
+func optional(for array: [Int]?) -> Int? {
+    guard let array = array else {
+        return nil
+    }
+    return array.randomElement()
+}
+
+if let optional = optional(for: []) {
+    print(optional)
+} else {
+    print(Int.random(in: 1...100))
+}
+
+// using optional chaining in a line
+func optional1(for array: [Int]?) -> Int {
+    array?.randomElement() ?? Int.random(in: 1...100)
+}
+
+print(optional1(for: [1,2,3,4,5]))
+
+// using closure and optional chaining
+let optional2 =  { (array: [Int]?) in array?.randomElement() ?? Int.random(in: 1...100)}
+print(optional2([]))
